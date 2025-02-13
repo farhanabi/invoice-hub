@@ -103,6 +103,7 @@ export const InvoiceForm = ({
                     placeholder: 'DD/MM/YYYY',
                     size,
                     fullWidth: true,
+                    error: !!errors.dueDate,
                   },
                 }}
               />
@@ -114,7 +115,7 @@ export const InvoiceForm = ({
       <Controller
         name="amount"
         control={control}
-        render={({ field }) => (
+        render={({ field: { value, onChange, ...field } }) => (
           <InputWrapper
             label="Amount"
             required
@@ -125,6 +126,12 @@ export const InvoiceForm = ({
               {...field}
               {...baseInputProps}
               type="number"
+              value={value ?? ''}
+              onChange={(e) =>
+                onChange(
+                  e.target.value === '' ? undefined : Number(e.target.value)
+                )
+              }
               placeholder="Enter your invoice amount"
               InputProps={{
                 startAdornment: (
@@ -145,7 +152,7 @@ export const InvoiceForm = ({
       <Controller
         name="status"
         control={control}
-        render={({ field }) => (
+        render={({ field: { value, ...field } }) => (
           <InputWrapper
             label="Status"
             required
@@ -156,7 +163,22 @@ export const InvoiceForm = ({
               {...field}
               {...baseInputProps}
               select
-              placeholder="Choose the status"
+              value={value ?? ''}
+              slotProps={{
+                select: {
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (!selected) {
+                      return (
+                        <Typography color="text.secondary">
+                          Choose the status
+                        </Typography>
+                      );
+                    }
+                    return <>{selected}</>;
+                  },
+                },
+              }}
               error={!!errors.status}
               fullWidth
               disabled={disabled}

@@ -18,13 +18,14 @@ export const useInvoiceForm = () => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormInputs>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
       name: '',
-      dueDate: new Date(),
-      amount: 0,
-      status: 'Pending',
+      dueDate: undefined,
+      amount: undefined,
+      status: undefined,
     },
   });
 
@@ -36,6 +37,15 @@ export const useInvoiceForm = () => {
       addInvoice(data);
       setShowSuccess(true);
 
+      // Reset form after successful submission
+      reset({
+        name: '',
+        dueDate: undefined,
+        amount: undefined,
+        status: undefined,
+      });
+
+      // Redirect to list page after delay
       setTimeout(() => {
         router.push('/invoices/list');
       }, 2000);
