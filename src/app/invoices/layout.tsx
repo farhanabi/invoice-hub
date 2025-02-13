@@ -1,12 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import { Passion_One } from 'next/font/google';
-import Image from 'next/image';
 import {
   Box,
   Typography,
@@ -15,7 +11,11 @@ import {
   Drawer,
   useMediaQuery,
   useTheme,
+  Switch,
 } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { Passion_One } from 'next/font/google';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -190,11 +190,13 @@ export default function InvoiceLayout({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            justifyContent: 'justify-between',
+            gap: 2,
             p: 2,
+            bgcolor: 'white',
             borderBottom: '1px solid',
             borderColor: 'divider',
-            bgcolor: 'white',
+            width: '100%',
           }}
         >
           {isMobile && (
@@ -208,33 +210,108 @@ export default function InvoiceLayout({
               <MenuIcon />
             </IconButton>
           )}
-
           <Box
-            sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}
+            sx={{
+              display: 'flex',
+              flex: 1,
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              gap: 4,
+            }}
           >
-            <IconButton>
-              <DarkModeOutlinedIcon />
-            </IconButton>
-            <IconButton>
-              <NotificationsNoneOutlinedIcon />
-            </IconButton>
+            {!isMobile && (
+              <>
+                {/* Dark Mode Switch */}
+                <Switch
+                  // checked={isDarkMode}
+                  // onChange={(e) => setIsDarkMode(e.target.checked)}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#2196f3',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#2196f3',
+                    },
+                  }}
+                />
+
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  {/* Notification Bell */}
+                  <Box>
+                    <IconButton
+                      sx={{
+                        cursor: 'pointer',
+                        background: '#EFF4FB',
+                        borderRadius: '100%',
+                        border: '0.5px solid #E2E8F0',
+                      }}
+                    >
+                      <Image
+                        src="/icons/alarm.svg"
+                        alt=""
+                        width={18}
+                        height={18}
+                      />
+                    </IconButton>
+                  </Box>
+                  {/* Messages Icon */}
+                  <Box sx={{ position: 'relative' }}>
+                    <IconButton
+                      sx={{
+                        cursor: 'pointer',
+                        background: '#EFF4FB',
+                        borderRadius: '100%',
+                        border: '0.5px solid #E2E8F0',
+                      }}
+                    >
+                      <Image
+                        src="/icons/chat.svg"
+                        alt=""
+                        width={18}
+                        height={18}
+                      />
+                    </IconButton>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'error.main',
+                        borderRadius: '50%',
+                        border: '2px solid #fff',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </>
+            )}
+
+            {/* User Info */}
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                ml: 2,
-                '& .user-info': {
-                  display: { xs: 'none', sm: 'block' },
-                },
+                gap: 1.5,
+                cursor: 'pointer',
               }}
             >
-              <Box sx={{ mr: 2, textAlign: 'right' }} className="user-info">
-                <Typography variant="body1">John Doe</Typography>
-                <Typography variant="body2" color="text.secondary">
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 600, color: '#1C2536' }}
+                >
+                  John Doe
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                   Verified Member
                 </Typography>
               </Box>
-              <Avatar>JD</Avatar>
+              <Avatar sx={{ width: 40, height: 40 }} src="/images/john-doe.png">
+                JD
+              </Avatar>
+              <KeyboardArrowDownIcon sx={{ fontSize: 20, color: '#666' }} />
             </Box>
           </Box>
         </Box>
