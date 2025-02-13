@@ -181,12 +181,27 @@ export default function InvoiceListPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          gap: 2,
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" component="h1">
           My Invoices
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+            width: { xs: '100%', sm: 'auto' },
+          }}
+        >
           <TextField
             placeholder="Search"
             value={search}
@@ -199,13 +214,15 @@ export default function InvoiceListPage() {
               ),
             }}
             disabled={isLoading}
-            sx={{ flexGrow: 1 }}
+            fullWidth
           />
           <Select
             value={status}
             onChange={(e) => updateFilters(search, e.target.value)}
             disabled={isLoading}
-            sx={{ minWidth: 200 }}
+            sx={{
+              minWidth: { xs: '100%', sm: 200 },
+            }}
           >
             <MenuItem value="All Status">All Status</MenuItem>
             <MenuItem value="Paid">Paid</MenuItem>
@@ -215,7 +232,110 @@ export default function InvoiceListPage() {
         </Box>
       </Box>
 
-      <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+      {/* Mobile Card View */}
+      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+        {isLoading ? (
+          [...Array(3)].map((_, index) => (
+            <Paper key={index} sx={{ p: 2, mb: 2 }}>
+              <Box sx={{ mb: 2 }}>
+                <Skeleton variant="text" width="60%" height={24} />
+                <Skeleton variant="text" width="40%" height={20} />
+              </Box>
+              <Box
+                sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}
+              >
+                <Skeleton variant="text" width="30%" />
+                <Skeleton variant="rounded" width={80} height={32} />
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Skeleton variant="text" width="40%" />
+                <Skeleton variant="circular" width={32} height={32} />
+              </Box>
+            </Paper>
+          ))
+        ) : filteredInvoices.length === 0 ? (
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <TableRow>
+              <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  No invoices found
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {search || status !== 'All Status'
+                    ? "Try adjusting your search or filter to find what you're looking for"
+                    : 'Get started by creating your first invoice'}
+                </Typography>
+                {!search && status === 'All Status' && (
+                  <Button
+                    variant="contained"
+                    onClick={() => router.push('/invoices/add')}
+                    sx={{ mt: 2 }}
+                  >
+                    Create Invoice
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          </Paper>
+        ) : (
+          filteredInvoices.map((invoice) => (
+            <Paper key={invoice.id} sx={{ p: 2, mb: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  mb: 2,
+                }}
+              >
+                <Box>
+                  <Typography variant="subtitle1">{invoice.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {invoice.number}
+                  </Typography>
+                </Box>
+                <IconButton
+                  onClick={(e) => handleMenuOpen(e, invoice)}
+                  sx={{ mt: -1, mr: -1 }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Due{' '}
+                  {invoice.dueDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: '2-digit',
+                    year: 'numeric',
+                  })}
+                </Typography>
+                <StatusChip status={invoice.status} />
+              </Box>
+
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                {formatCurrency(invoice.amount)}
+              </Typography>
+            </Paper>
+          ))
+        )}
+      </Box>
+
+      <TableContainer
+        component={Paper}
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          boxShadow: 'none',
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>

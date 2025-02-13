@@ -15,6 +15,8 @@ import {
   InputAdornment,
   CircularProgress,
   Backdrop,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -35,6 +37,8 @@ const statusOptions: InvoiceStatus[] = ['Paid', 'Unpaid', 'Pending'];
 
 export default function AddInvoicePage() {
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { addInvoice, isLoading, error } = useInvoices();
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +66,6 @@ export default function AddInvoicePage() {
       addInvoice(data);
       setShowSuccess(true);
 
-      // Redirect to list page after 2 seconds
       setTimeout(() => {
         router.push('/invoices/list');
       }, 2000);
@@ -89,7 +92,7 @@ export default function AddInvoicePage() {
   }
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: { sm: '100%', md: '800px' }, mx: 'auto' }}>
       <Typography variant="h5" component="h1" sx={{ mb: 3 }}>
         Add Invoice
       </Typography>
@@ -108,7 +111,7 @@ export default function AddInvoicePage() {
         </Alert>
       )}
 
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
         <Typography variant="h6" sx={{ mb: 3 }}>
           Invoice Form
         </Typography>
@@ -118,7 +121,10 @@ export default function AddInvoicePage() {
             sx={{
               display: 'grid',
               gap: 3,
-              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(2, 1fr)',
+              },
             }}
           >
             <Controller
@@ -134,6 +140,7 @@ export default function AddInvoicePage() {
                   required
                   fullWidth
                   disabled={isLoading || isSubmitting}
+                  size={isMobile ? 'small' : 'medium'}
                 />
               )}
             />
@@ -143,6 +150,7 @@ export default function AddInvoicePage() {
               placeholder="Auto-generated"
               disabled
               fullWidth
+              size={isMobile ? 'small' : 'medium'}
             />
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -160,6 +168,8 @@ export default function AddInvoicePage() {
                         error: !!errors.dueDate,
                         helperText: errors.dueDate?.message,
                         placeholder: 'DD/MM/YYYY',
+                        size: isMobile ? 'small' : 'medium',
+                        fullWidth: true,
                       },
                     }}
                   />
@@ -188,6 +198,7 @@ export default function AddInvoicePage() {
                   required
                   fullWidth
                   disabled={isLoading || isSubmitting}
+                  size={isMobile ? 'small' : 'medium'}
                 />
               )}
             />
@@ -206,6 +217,7 @@ export default function AddInvoicePage() {
                   required
                   fullWidth
                   disabled={isLoading || isSubmitting}
+                  size={isMobile ? 'small' : 'medium'}
                 >
                   {statusOptions.map((option) => (
                     <MenuItem key={option} value={option}>
@@ -217,14 +229,21 @@ export default function AddInvoicePage() {
             />
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: { xs: 'stretch', sm: 'flex-end' },
+              mt: 3,
+            }}
+          >
             <Button
               type="submit"
               variant="contained"
-              size="large"
+              size={isMobile ? 'medium' : 'large'}
               disabled={isLoading || isSubmitting}
               sx={{
-                minWidth: 200,
+                width: { xs: '100%', sm: 'auto' },
+                minWidth: { sm: 200 },
                 bgcolor: '#4F46E5',
                 '&:hover': {
                   bgcolor: '#4338CA',
