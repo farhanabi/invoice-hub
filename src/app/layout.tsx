@@ -6,6 +6,8 @@ import theme from '~/lib/theme';
 
 import './globals.css';
 
+export const runtime = 'edge';
+
 const openSans = Open_Sans({ subsets: ['latin'] });
 
 export default function RootLayout({
