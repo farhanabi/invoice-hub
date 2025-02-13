@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import AddIcon from '@mui/icons-material/Add';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import Image from 'next/image';
 import {
   Box,
   Typography,
@@ -23,11 +22,11 @@ const DRAWER_WIDTH = 240;
 
 const NavLink = ({
   href,
-  icon: Icon,
+  iconSrc,
   children,
 }: {
   href: string;
-  icon: typeof AddIcon;
+  iconSrc: string;
   children: React.ReactNode;
 }) => {
   const pathname = usePathname();
@@ -39,15 +38,34 @@ const NavLink = ({
         sx={{
           display: 'flex',
           alignItems: 'center',
-          color: isActive ? 'white' : 'grey.300',
+          color: isActive ? '#F4F4F4' : '#9D9D9D',
           p: 1.5,
           mb: 1,
           borderRadius: 1,
-          bgcolor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
           '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
         }}
       >
-        <Icon sx={{ mr: 2 }} />
+        <Box
+          sx={{
+            mr: 2,
+            width: 18,
+            height: 18,
+            position: 'relative',
+            '& svg': {
+              stroke: isActive ? '#F4F4F4' : '#9D9D9D',
+            },
+          }}
+        >
+          <Image
+            src={iconSrc}
+            alt=""
+            fill
+            style={{
+              fill: isActive ? '#F4F4F4' : '#9D9D9D',
+              stroke: isActive ? '#F4F4F4' : '#9D9D9D',
+            }}
+          />
+        </Box>
         <Typography>{children}</Typography>
       </Box>
     </Link>
@@ -87,11 +105,11 @@ export default function InvoiceLayout({
         MENU
       </Typography>
 
-      <NavLink href="/invoices/add" icon={AddIcon}>
+      <NavLink href="/invoices/add" iconSrc="/capital-letter.svg">
         Add Invoice
       </NavLink>
 
-      <NavLink href="/invoices/list" icon={ReceiptOutlinedIcon}>
+      <NavLink href="/invoices/list" iconSrc="/bullet-points.svg">
         My Invoices
       </NavLink>
     </Box>
@@ -120,7 +138,7 @@ export default function InvoiceLayout({
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
