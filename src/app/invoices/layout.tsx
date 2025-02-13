@@ -5,6 +5,7 @@ import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import { Passion_One } from 'next/font/google';
 import Image from 'next/image';
 import {
   Box,
@@ -39,10 +40,16 @@ const NavLink = ({
           display: 'flex',
           alignItems: 'center',
           color: isActive ? '#F4F4F4' : '#9D9D9D',
-          p: 1.5,
+          py: 1,
           mb: 1,
           borderRadius: 1,
-          '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+          transition: 'color 0.2s ease-in-out',
+          '&:hover': {
+            color: '#F4F4F4',
+            '& img': {
+              filter: 'brightness(0) invert(1)',
+            },
+          },
         }}
       >
         <Box
@@ -51,8 +58,9 @@ const NavLink = ({
             width: 18,
             height: 18,
             position: 'relative',
-            '& svg': {
-              stroke: isActive ? '#F4F4F4' : '#9D9D9D',
+            '& img': {
+              filter: isActive ? 'brightness(0) invert(1)' : 'brightness(0.6)',
+              transition: 'filter 0.2s ease-in-out',
             },
           }}
         >
@@ -61,8 +69,7 @@ const NavLink = ({
             alt=""
             fill
             style={{
-              fill: isActive ? '#F4F4F4' : '#9D9D9D',
-              stroke: isActive ? '#F4F4F4' : '#9D9D9D',
+              objectFit: 'contain',
             }}
           />
         </Box>
@@ -71,6 +78,11 @@ const NavLink = ({
     </Link>
   );
 };
+
+const passionOne = Passion_One({
+  weight: ['700'],
+  subsets: ['latin'],
+});
 
 export default function InvoiceLayout({
   children,
@@ -88,9 +100,21 @@ export default function InvoiceLayout({
   const drawer = (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h6" component="div">
-          InvoiceHub
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Image src="/logomark.svg" alt="logo" width={30} height={30} />
+          <Typography
+            variant="h6"
+            component="div"
+            className={passionOne.className}
+            sx={{
+              fontSize: '1.5rem',
+              letterSpacing: '0.02em',
+              fontFamily: 'Passion One, cursive',
+            }}
+          >
+            InvoiceHub
+          </Typography>
+        </Box>
         {isMobile && (
           <IconButton
             onClick={handleDrawerToggle}
@@ -101,7 +125,7 @@ export default function InvoiceLayout({
         )}
       </Box>
 
-      <Typography variant="body2" sx={{ mb: 2, color: 'grey.500' }}>
+      <Typography variant="body2" sx={{ mb: 1, color: 'grey.500' }}>
         MENU
       </Typography>
 
