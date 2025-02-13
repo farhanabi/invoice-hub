@@ -10,11 +10,15 @@ export const invoiceSchema = z.object({
     invalid_type_error: 'Due date must be a valid date',
   }),
   amount: z
-    .number({
-      required_error: 'Amount is required',
-      invalid_type_error: 'Amount must be a number',
+    .string()
+    .min(1, 'Amount is required')
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val), {
+      message: 'Amount must be a number',
     })
-    .min(0, 'Amount must be greater than 0'),
+    .refine((val) => val > 0, {
+      message: 'Amount must be greater than 0',
+    }),
   status: z.enum(['Paid', 'Unpaid', 'Pending'], {
     required_error: 'Status is required',
     invalid_type_error: 'Invalid status selected',

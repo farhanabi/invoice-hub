@@ -12,6 +12,8 @@ import {
   Button,
   Alert,
   Paper,
+  Snackbar,
+  CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -38,12 +40,16 @@ export default function InvoiceListPage() {
     anchorEl,
     selectedInvoice,
     deleteDialogOpen,
+    deleteError,
+    isDeleting,
+    showDeleteSuccess,
     handleMenuOpen,
     handleMenuClose,
+    handleDeleteCancel,
     handleDeleteClick,
     handleDeleteConfirm,
     handleEditClick,
-    setDeleteDialogOpen,
+    setShowDeleteSuccess,
   } = useInvoiceActions(deleteInvoice);
 
   const filteredInvoices = filterInvoices(invoices, search, status);
@@ -183,22 +189,59 @@ export default function InvoiceListPage() {
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
       >
-        <DialogTitle>Delete Invoice</DialogTitle>
+        <DialogTitle id="delete-dialog-title">Delete Invoice</DialogTitle>
         <DialogContent>
-          <Typography>
-            Are you sure you want to delete this invoice? This action cannot be
-            undone.
-          </Typography>
+          {deleteError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {deleteError.message}
+            </Alert>
+          ) : (
+            <Typography>
+              Are you sure you want to delete invoice{' '}
+              <strong>{selectedInvoice?.number}</strong>? This action cannot be
+              undone.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDeleteConfirm} color="error">
-            Delete
+          <Button
+            onClick={handleDeleteCancel}
+            color="inherit"
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            disabled={isDeleting}
+            startIcon={
+              isDeleting ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <DeleteOutlineIcon />
+              )
+            }
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Success Notification */}
+      <Snackbar
+        open={showDeleteSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShowDeleteSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          Invoice deleted successfully
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
