@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,6 +30,8 @@ import {
   Skeleton,
   Alert,
 } from '@mui/material';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useInvoices } from '~/hooks/use-invoices';
 import type { Invoice } from '~/lib/types/invoice';
@@ -180,7 +180,7 @@ export default function InvoiceListPage() {
   }
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Box
         sx={{
           display: 'flex',
@@ -190,7 +190,7 @@ export default function InvoiceListPage() {
           mb: 3,
         }}
       >
-        <Typography variant="h5" component="h1">
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 700 }}>
           My Invoices
         </Typography>
 
@@ -206,12 +206,40 @@ export default function InvoiceListPage() {
             placeholder="Search"
             value={search}
             onChange={(e) => updateFilters(e.target.value, status)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Image
+                      src="/icons/magnifying.svg"
+                      alt=""
+                      width={18}
+                      height={18}
+                    />
+                  </InputAdornment>
+                ),
+                sx: {
+                  height: 40,
+                  borderStyle: 'none',
+                  borderRadius: 2,
+                  fontSize: 12,
+                  '.MuiTextField-root': {
+                    borderRadius: 2,
+                  },
+                  '.MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'white',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'white',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'white',
+                  },
+                },
+              },
+            }}
+            sx={{
+              background: 'white',
             }}
             disabled={isLoading}
             fullWidth
@@ -222,6 +250,20 @@ export default function InvoiceListPage() {
             disabled={isLoading}
             sx={{
               minWidth: { xs: '100%', sm: 200 },
+              height: 40,
+              background: 'white',
+              border: '0px',
+              borderRadius: 2,
+              fontSize: 12,
+              '.MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white',
+              },
             }}
           >
             <MenuItem value="All Status">All Status</MenuItem>
@@ -232,7 +274,7 @@ export default function InvoiceListPage() {
         </Box>
       </Box>
 
-      {/* Mobile Card View */}
+      {/* ... (rest of component code) */}
       <Box sx={{ display: { xs: 'block', md: 'none' } }}>
         {isLoading ? (
           [...Array(3)].map((_, index) => (
@@ -334,10 +376,18 @@ export default function InvoiceListPage() {
         sx={{
           display: { xs: 'none', md: 'block' },
           boxShadow: 'none',
+          p: { xs: 2, sm: 4 },
         }}
       >
         <Table>
-          <TableHead>
+          <TableHead
+            sx={{
+              background: '#F7F9FC',
+              '.MuiTableCell-root': {
+                borderBottom: 'none',
+              },
+            }}
+          >
             <TableRow>
               <TableCell>Invoice</TableCell>
               <TableCell>Due Date</TableCell>
@@ -376,9 +426,19 @@ export default function InvoiceListPage() {
               filteredInvoices.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell>
-                    <Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px',
+                      }}
+                    >
                       <Typography>{invoice.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        color="#64748B"
+                        sx={{ fontWeight: 600 }}
+                      >
                         {invoice.number}
                       </Typography>
                     </Box>
@@ -396,7 +456,12 @@ export default function InvoiceListPage() {
                   <TableCell>{formatCurrency(invoice.amount)}</TableCell>
                   <TableCell align="right">
                     <IconButton onClick={(e) => handleMenuOpen(e, invoice)}>
-                      <MoreVertIcon />
+                      <Image
+                        src="/icons/three-bars.svg"
+                        width={20}
+                        height={20}
+                        alt=""
+                      />
                     </IconButton>
                   </TableCell>
                 </TableRow>
