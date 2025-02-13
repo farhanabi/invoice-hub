@@ -6,6 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import ReplayIcon from '@mui/icons-material/Replay';
 import {
   Box,
   Typography,
@@ -28,6 +29,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Skeleton,
+  Alert,
 } from '@mui/material';
 
 import { useInvoices } from '~/hooks/use-invoices';
@@ -59,10 +62,33 @@ const StatusChip = ({ status }: { status: string }) => {
   );
 };
 
+const TableRowSkeleton = () => (
+  <TableRow>
+    <TableCell>
+      <Box>
+        <Skeleton variant="text" width={200} sx={{ mb: 1 }} />
+        <Skeleton variant="text" width={120} />
+      </Box>
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={100} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="rounded" width={80} height={32} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={120} />
+    </TableCell>
+    <TableCell align="right">
+      <Skeleton variant="circular" width={40} height={40} />
+    </TableCell>
+  </TableRow>
+);
+
 export default function InvoiceListPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { invoices, deleteInvoice } = useInvoices();
+  const { invoices, isLoading, error, deleteInvoice } = useInvoices();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -125,6 +151,34 @@ export default function InvoiceListPage() {
     router.push(`/invoices/edit/${invoice.id}`);
   };
 
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              startIcon={<ReplayIcon />}
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          }
+          sx={{ mb: 3 }}
+        >
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Failed to load invoices
+          </Typography>
+          <Typography variant="body2">
+            {error.message || 'An unexpected error occurred. Please try again.'}
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
@@ -144,11 +198,13 @@ export default function InvoiceListPage() {
                 </InputAdornment>
               ),
             }}
+            disabled={isLoading}
             sx={{ flexGrow: 1 }}
           />
           <Select
             value={status}
             onChange={(e) => updateFilters(search, e.target.value)}
+            disabled={isLoading}
             sx={{ minWidth: 200 }}
           >
             <MenuItem value="All Status">All Status</MenuItem>
@@ -171,34 +227,61 @@ export default function InvoiceListPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredInvoices.map((invoice) => (
-              <TableRow key={invoice.id}>
-                <TableCell>
-                  <Box>
-                    <Typography>{invoice.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {invoice.number}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  {invoice.dueDate.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: '2-digit',
-                    year: 'numeric',
-                  })}
-                </TableCell>
-                <TableCell>
-                  <StatusChip status={invoice.status} />
-                </TableCell>
-                <TableCell>{formatCurrency(invoice.amount)}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={(e) => handleMenuOpen(e, invoice)}>
-                    <MoreVertIcon />
-                  </IconButton>
+            {isLoading ? (
+              // Show 5 skeleton rows while loading
+              [...Array(5)].map((_, index) => <TableRowSkeleton key={index} />)
+            ) : filteredInvoices.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No invoices found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {search || status !== 'All Status'
+                      ? "Try adjusting your search or filter to find what you're looking for"
+                      : 'Get started by creating your first invoice'}
+                  </Typography>
+                  {!search && status === 'All Status' && (
+                    <Button
+                      variant="contained"
+                      onClick={() => router.push('/invoices/add')}
+                      sx={{ mt: 2 }}
+                    >
+                      Create Invoice
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredInvoices.map((invoice) => (
+                <TableRow key={invoice.id}>
+                  <TableCell>
+                    <Box>
+                      <Typography>{invoice.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {invoice.number}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    {invoice.dueDate.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <StatusChip status={invoice.status} />
+                  </TableCell>
+                  <TableCell>{formatCurrency(invoice.amount)}</TableCell>
+                  <TableCell align="right">
+                    <IconButton onClick={(e) => handleMenuOpen(e, invoice)}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
