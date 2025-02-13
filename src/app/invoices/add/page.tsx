@@ -1,5 +1,6 @@
 'use client';
 
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
   Typography,
@@ -126,20 +127,60 @@ export default function AddInvoicePage() {
 
       {showSuccess && (
         <Alert
+          icon={
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: '8px',
+                bgcolor: '#68DBA7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CheckIcon sx={{ color: 'white', fontSize: 20 }} />
+            </Box>
+          }
           severity="success"
           sx={{
             mt: 3,
-            backgroundColor: '#E5F6E5',
-            color: '#1F7A1F',
+            py: 2,
+            px: 2,
+            backgroundColor: '#E8F8F1',
+            color: '#004434',
+            borderLeft: '8px solid #68DBA7',
+            borderTop: 'none',
+            borderRight: 'none',
+            borderBottom: 'none',
+            '& .MuiAlert-message': {
+              padding: 0,
+              ml: 2,
+            },
             '& .MuiAlert-icon': {
-              color: '#1F7A1F',
+              padding: 0,
+              mr: 0,
+              alignItems: 'center',
             },
           }}
         >
-          <Typography variant="subtitle2">
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: 600,
+              fontSize: '16px',
+              mb: 0.5,
+            }}
+          >
             Invoice added successfully!
           </Typography>
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'rgba(0, 68, 52, 0.9)',
+              fontSize: '14px',
+            }}
+          >
             You can view and manage your invoice in the &apos;My Invoices&apos;
             section.
           </Typography>
