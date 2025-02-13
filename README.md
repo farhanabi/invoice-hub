@@ -1,8 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InvoiceHub
+
+InvoiceHub is a modern invoice management system built with Next.js 14, TypeScript, and Material-UI. It provides a clean and efficient interface for managing invoices with features like adding new invoices, listing existing ones, and filtering through them.
+
+## Features
+
+- 📝 Create new invoices with validation
+- 📊 View all invoices in a responsive table/card layout
+- 🔍 Search and filter invoices
+- 💾 Persistent storage using localStorage
+- 📱 Fully responsive design
+- 🎨 Clean and modern UI using Material-UI
+- ✨ Form validation using React Hook Form and Zod
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.17 or later
+- npm, yarn, or pnpm
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone git@github.com:farhanabi/invoice-hub.git
+cd invoice-hub
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
@@ -10,27 +46,76 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                # Next.js 14 App Router pages
+│   ├── invoices/       # Invoice-related pages
+│   │   ├── add/        # Add invoice page
+│   │   └── list/       # Invoice listing page
+│   └── layout.tsx      # Root layout component
+├── components/         # Reusable UI components
+├── hooks/              # Custom React hooks
+│   └── use-invoices.ts # Invoice management hook
+└── lib/                # Utility functions and configurations
+    ├── schemas/        # Zod validation schemas
+    ├── types/          # TypeScript type definitions
+    └── theme.ts        # MUI theme configuration
+```
 
-## Learn More
+## Technical Decisions
 
-To learn more about Next.js, take a look at the following resources:
+### Framework & Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js 14 with App Router**: Chosen for its file-based routing, server components, and built-in performance optimizations. The App Router provides a more intuitive project structure and better type safety.
+- **TypeScript**: Enables better type safety and developer experience with early error detection and improved IDE support.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### State Management & Data Persistence
 
-## Deploy on Vercel
+- **Custom Hook (useInvoices)**: Implements a simple and effective state management solution using React's built-in hooks. This approach avoids the complexity of external state management libraries while maintaining clean separation of concerns.
+- **localStorage**: Used for data persistence to maintain simplicity while meeting the requirement of preserving data across page refreshes. In a production environment, this would be replaced with a proper backend.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### UI & Styling
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Material-UI (MUI)**: Provides a comprehensive set of pre-built components that follow Material Design principles while allowing for customization. MUI's theming system enables consistent styling across the application.
+- **Responsive Design**: Implements different layouts for mobile and desktop views, ensuring a good user experience across all device sizes:
+  - Card-based layout for mobile devices
+  - Table view for desktop screens
+  - Collapsible sidebar navigation
+  - Optimized form layouts
+
+### Form Management & Validation
+
+- **React Hook Form**: Offers excellent performance and developer experience for form handling with minimal re-renders.
+- **Zod**: Provides robust schema validation with great TypeScript integration, making it easier to maintain type safety between form data and validation rules.
+
+### Loading & Error States
+
+- **Optimistic Updates**: Implements immediate UI feedback while handling operations.
+- **Skeleton Loading**: Uses skeleton placeholders during data loading for a better user experience.
+- **Error Boundaries**: Handles errors gracefully with user-friendly error messages and recovery options.
+
+## Future Improvements
+
+1. Backend Integration
+
+   - Replace localStorage with proper API endpoints
+   - Implement user authentication
+   - Add real-time updates
+
+2. Features
+
+   - Invoice editing functionality
+   - PDF generation and export
+   - Email notifications
+   - Multi-currency support
+
+3. Performance
+   - Implement pagination for large datasets
+   - Add infinite scrolling or load-more functionality
+   - Optimize bundle size
