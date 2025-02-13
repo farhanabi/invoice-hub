@@ -1,99 +1,55 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
   Typography,
-  TextField,
-  MenuItem,
   Button,
   Paper,
   Alert,
-  InputAdornment,
   CircularProgress,
   Backdrop,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 
-import { invoiceSchema } from '~/lib/schemas/invoice';
-import { useInvoices } from '~/hooks/use-invoices';
-import type { InvoiceStatus } from '~/lib/types/invoice';
+import { InvoiceForm } from '~/components/invoices/add/invoice-form';
+import { useInvoiceForm } from '~/hooks/use-invoice-form';
 
-type FormInputs = {
-  name: string;
-  dueDate: Date;
-  amount: number;
-  status: InvoiceStatus;
-};
-
-const statusOptions: InvoiceStatus[] = ['Paid', 'Unpaid', 'Pending'];
+const statusOptions = ['Paid', 'Unpaid', 'Pending'];
 
 export default function AddInvoicePage() {
-  const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { addInvoice, isLoading, error } = useInvoices();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<Error | null>(null);
-
   const {
     control,
+    errors,
+    isLoading,
+    isSubmitting,
+    showSuccess,
+    submitError,
+    invoiceError,
     handleSubmit,
-    formState: { errors },
-  } = useForm<FormInputs>({
-    resolver: zodResolver(invoiceSchema),
-    defaultValues: {
-      name: '',
-      dueDate: new Date(),
-      amount: 0,
-      status: 'Pending',
-    },
-  });
+    onSubmit,
+    setSubmitError,
+  } = useInvoiceForm();
 
-  const onSubmit = async (data: FormInputs) => {
-    try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-
-      addInvoice(data);
-      setShowSuccess(true);
-
-      setTimeout(() => {
-        router.push('/invoices/list');
-      }, 2000);
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err : new Error('Failed to add invoice')
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (error) {
+  if (invoiceError) {
     return (
       <Alert severity="error" sx={{ mb: 3 }}>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Failed to initialize invoice form
         </Typography>
         <Typography variant="body2">
-          {error.message || 'An unexpected error occurred. Please try again.'}
+          {invoiceError.message ||
+            'An unexpected error occurred. Please try again.'}
         </Typography>
       </Alert>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: { sm: '100%', md: '800px' }, mx: 'auto' }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 3 }}>
+    <Box sx={{ maxWidth: { sm: '100%', md: 1200 }, mx: 'auto' }}>
+      <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 3 }}>
         Add Invoice
       </Typography>
 
@@ -111,129 +67,35 @@ export default function AddInvoicePage() {
         </Alert>
       )}
 
-      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-        <Typography variant="h6" sx={{ mb: 3 }}>
+      <Paper>
+        <Typography
+          variant="h6"
+          sx={{
+            p: 2,
+            borderBottom: '1px solid #E2E8F0',
+            fontSize: 16,
+            fontWeight: 600,
+          }}
+        >
           Invoice Form
         </Typography>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 3,
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: 'repeat(2, 1fr)',
-              },
-            }}
-          >
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Name"
-                  placeholder="Enter your invoice name"
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                  required
-                  fullWidth
-                  disabled={isLoading || isSubmitting}
-                  size={isMobile ? 'small' : 'medium'}
-                />
-              )}
-            />
-
-            <TextField
-              label="Number"
-              placeholder="Auto-generated"
-              disabled
-              fullWidth
-              size={isMobile ? 'small' : 'medium'}
-            />
-
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <Controller
-                name="dueDate"
-                control={control}
-                render={({ field }) => (
-                  <DatePicker
-                    {...field}
-                    label="Due Date"
-                    disabled={isLoading || isSubmitting}
-                    slotProps={{
-                      textField: {
-                        required: true,
-                        error: !!errors.dueDate,
-                        helperText: errors.dueDate?.message,
-                        placeholder: 'DD/MM/YYYY',
-                        size: isMobile ? 'small' : 'medium',
-                        fullWidth: true,
-                      },
-                    }}
-                  />
-                )}
-              />
-            </LocalizationProvider>
-
-            <Controller
-              name="amount"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Amount"
-                  type="number"
-                  placeholder="Enter your invoice amount"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Typography color="text.secondary">Rp</Typography>
-                      </InputAdornment>
-                    ),
-                  }}
-                  error={!!errors.amount}
-                  helperText={errors.amount?.message}
-                  required
-                  fullWidth
-                  disabled={isLoading || isSubmitting}
-                  size={isMobile ? 'small' : 'medium'}
-                />
-              )}
-            />
-
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Status"
-                  placeholder="Choose the status"
-                  error={!!errors.status}
-                  helperText={errors.status?.message}
-                  required
-                  fullWidth
-                  disabled={isLoading || isSubmitting}
-                  size={isMobile ? 'small' : 'medium'}
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-          </Box>
+          <InvoiceForm
+            control={control}
+            errors={errors}
+            isLoading={isLoading}
+            isSubmitting={isSubmitting}
+            isMobile={isMobile}
+            statusOptions={statusOptions}
+          />
 
           <Box
             sx={{
               display: 'flex',
               justifyContent: { xs: 'stretch', sm: 'flex-end' },
               mt: 3,
+              p: 4,
             }}
           >
             <Button
@@ -244,9 +106,11 @@ export default function AddInvoicePage() {
               sx={{
                 width: { xs: '100%', sm: 'auto' },
                 minWidth: { sm: 200 },
-                bgcolor: '#4F46E5',
+                textTransform: 'capitalize',
+                px: 8,
+                bgcolor: '#3C50E0',
                 '&:hover': {
-                  bgcolor: '#4338CA',
+                  bgcolor: '#3C50E0',
                 },
               }}
             >
